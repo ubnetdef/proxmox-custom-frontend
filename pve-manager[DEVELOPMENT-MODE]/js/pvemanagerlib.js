@@ -32461,7 +32461,7 @@ Ext.define(
         columns: [
             {
                 header: gettext('Name'),
-                flex: 1,
+                width: 115,
                 sortable: true,
                 dataIndex: 'name',
             },
@@ -32480,13 +32480,6 @@ Ext.define(
                     var cls = value ? 'good' : 'critical';
                     return '<i class="fa ' + PVE.Utils.get_health_icon(cls) + '"><i/>';
                 },
-            },
-            {
-                header: gettext('Support'),
-                width: 100,
-                sortable: true,
-                dataIndex: 'level',
-                renderer: PVE.Utils.render_support_level,
             },
             {
                 header: gettext('Server Address'),
@@ -34186,28 +34179,6 @@ Ext.define('PVE.dc.Summary', {
             itemId: 'nodeview',
             xtype: 'pveDcNodeView',
             height: 250,
-        },
-        {
-            title: gettext('Subscriptions'),
-            height: 220,
-            items: [
-                {
-                    xtype: 'pveHealthWidget',
-                    itemId: 'subscriptions',
-                    userCls: 'pointer',
-                    listeners: {
-                        element: 'el',
-                        click: function () {
-                            if (this.component.userCls === 'pointer') {
-                                window.open(
-                                    'https://www.proxmox.com/en/proxmox-virtual-environment/pricing',
-                                    '_blank',
-                                );
-                            }
-                        },
-                    },
-                },
-            ],
         },
     ],
 
@@ -67539,7 +67510,6 @@ Ext.define('PVE.Workspace', {
                 handler: function (data) {
                     me.login = null;
                     me.updateLoginData(data);
-                    Proxmox.Utils.checked_command(Ext.emptyFn); // display subscription status
                 },
             });
         }
@@ -67707,9 +67677,9 @@ Ext.define('PVE.StdWorkspace', {
 
         if (PVE.VersionInfo) {
             let version = PVE.VersionInfo.version;
-            ui.update('Virtual Environment ' + version);
+            ui.update('Cyber Defense Research ' + version);
         } else {
-            ui.update('Virtual Environment');
+            ui.update('Cyber Defense Research');
         }
         ui.updateLayout();
     },
@@ -67865,16 +67835,16 @@ Ext.define('PVE.StdWorkspace', {
                         {
                             flex: 2,
                         },
-                        {
-                            xtype: 'proxmoxHelpButton',
-                            hidden: false,
-                            baseCls: 'x-btn',
-                            iconCls: 'fa fa-book x-btn-icon-el-default-toolbar-small ',
-                            listenToGlobalEvent: false,
-                            onlineHelp: 'pve_documentation_index',
-                            text: gettext('Documentation'),
-                            margin: '0 5 0 0',
-                        },
+//                        {
+//                            xtype: 'proxmoxHelpButton',
+//                            hidden: false,
+//                            baseCls: 'x-btn',
+//                            iconCls: 'fa fa-book x-btn-icon-el-default-toolbar-small ',
+//                            listenToGlobalEvent: false,
+//                            onlineHelp: 'pve_documentation_index',
+//                            text: gettext('Documentation'),
+//                            margin: '0 5 0 0',
+//                        },
                         createVM,
                         createCT,
                         {
@@ -67911,19 +67881,19 @@ Ext.define('PVE.StdWorkspace', {
                                         win.show();
                                     },
                                 },
-                                {
-                                    text: 'TFA',
-                                    itemId: 'tfaitem',
-                                    iconCls: 'fa fa-fw fa-lock',
-                                    handler: function (btn, event, rec) {
-                                        Ext.state.Manager.getProvider().set(
-                                            'dctab',
-                                            { value: 'tfa' },
-                                            true,
-                                        );
-                                        me.selectById('root');
-                                    },
-                                },
+//                                {
+//                                    text: 'TFA',
+//                                    itemId: 'tfaitem',
+//                                    iconCls: 'fa fa-fw fa-lock',
+//                                    handler: function (btn, event, rec) {
+//                                        Ext.state.Manager.getProvider().set(
+//                                            'dctab',
+//                                            { value: 'tfa' },
+//                                            true,
+//                                        );
+//                                        me.selectById('root');
+//                                    },
+//                                },
                                 {
                                     iconCls: 'fa fa-paint-brush',
                                     text: gettext('Color Theme'),
