@@ -1,5 +1,4 @@
 #!/bin/bash
-
 set -e
 
 ### CONFIG ###
@@ -44,31 +43,28 @@ echo "========== Proxmox Custom Deployment =========="
 echo "[*] Mode: $MODE"
 echo "[*] Source: $SRC_DIR"
 
-### 1️⃣ Fresh Clone Repo ###
-echo "[*] Resetting frontend repo..."
-
-if [ -d "$CUSTOM_DIR" ]; then
-    echo "[*] Removing existing repo..."
-    rm -rf "$CUSTOM_DIR"
+### 1️⃣ Clone or update repo ###
+if [ ! -d "$CUSTOM_DIR/.git" ]; then
+    echo "[*] Cloning repo..."
+    rm /UBnetDef-Frontend/ -rf
+    git clone --depth 1 "$REPO" "$CUSTOM_DIR"
+else
+    echo "[*] Updating repo..."
+    git -C "$CUSTOM_DIR" pull
 fi
 
-echo "[*] Cloning repo..."
-git clone --depth 1 "$REPO" "$CUSTOM_DIR"
-
-### 2️⃣ Validate Source ###
+### 2️⃣ Validate source ###
 if [ ! -d "$SRC_DIR" ]; then
     echo "[!] Mode folder not found: $SRC_DIR"
     exit 1
 fi
 
-### 3️⃣ Deploy Frontend Overrides ###
+### 3️⃣ Deploy frontend via rsync (mirror mode) ###
 echo "[*] Applying frontend overrides..."
+RSYNC_OUTPUT=$(rsync -av --exclude='.git' "$SRC_DIR/" "$PVE_MANAGER_DIR/")
 
-RSYNC_OUTPUT=$(rsync -av --delete --exclude='.git' "$SRC_DIR/" "$PVE_MANAGER_DIR/")
-
-### 4️⃣ Deploy PWT Logo ###
+### 4️⃣ Deploy PWT logo ###
 LOGO_CHANGED=0
-
 if [ -f "$LOGO_SRC" ]; then
     echo "[*] Applying PWT logo..."
     cp "$LOGO_SRC" "$PWT_IMG_DIR/proxmox_logo.svg"
@@ -77,13 +73,13 @@ else
     echo "[!] No proxmox_logo.svg found in $SRC_DIR/images/"
 fi
 
-### 5️⃣ Optional Legacy Logo ###
+### 5️⃣ Optional legacy logo ###
 if [ -f "$LEGACY_LOGO_SRC" ]; then
     echo "[*] Applying legacy logo..."
     cp "$LEGACY_LOGO_SRC" "$PVE_MANAGER_DIR/images/logo.svg"
 fi
 
-### 6️⃣ Restart Only If Needed ###
+### 6️⃣ Restart pveproxy only if changes happened ###
 if echo "$RSYNC_OUTPUT" | grep -qv "sending incremental file list" || [ "$LOGO_CHANGED" -eq 1 ]; then
     echo "[*] Changes detected, restarting pveproxy..."
     systemctl restart pveproxy
