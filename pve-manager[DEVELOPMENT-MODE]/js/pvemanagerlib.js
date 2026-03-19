@@ -67470,7 +67470,7 @@ Ext.define('PVE.storage.ESXIInputPanel', {
 Ext.define('PVE.Workspace', {
     extend: 'Ext.container.Viewport',
 
-    title: 'Proxmox Virtual Environment',
+    title: 'UBnetDef Hypervisor',
 
     loginData: null, // Data from last login call
 
