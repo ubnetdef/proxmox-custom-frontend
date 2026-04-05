@@ -9799,7 +9799,8 @@ Ext.define('PVE.form.ViewSelector', {
 
         Ext.apply(me, {
             store: store,
-            value: groupdef[0][0],
+            value: 'pool',
+            //value: groupdef[0][0],
             getViewFilter: function () {
                 let view = me.getValue();
                 return Ext.apply({ id: view }, default_views[view] || default_views.server);
@@ -9821,7 +9822,8 @@ Ext.define('PVE.form.ViewSelector', {
             },
             stateEvents: ['select'],
             stateful: true,
-            stateId: 'pveview',
+            stateId: 'pveview_pool',
+            //stateId: 'pveview',
             id: 'view',
         });
 
