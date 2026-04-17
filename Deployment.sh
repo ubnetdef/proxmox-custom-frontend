@@ -8,6 +8,34 @@ CUSTOM_DIR="/UBnetDef-Frontend"
 PVE_MANAGER_DIR="/usr/share/pve-manager"
 PWT_IMG_DIR="/usr/share/javascript/proxmox-widget-toolkit/images"
 
+REQUIRED_VERSION="9.1.5"
+
+### PRE-CHECK: Enforce Proxmox Version ###
+echo "========== Pre-Check: Proxmox Version =========="
+
+CURRENT_VERSION=$(dpkg-query -W -f='${Version}' pve-manager 2>/dev/null || echo "none")
+
+echo "[*] Current pve-manager version: $CURRENT_VERSION"
+echo "[*] Required version: $REQUIRED_VERSION"
+
+if [ "$CURRENT_VERSION" != "$REQUIRED_VERSION" ]; then
+    echo "[*] Installing required version..."
+
+    apt update
+    apt install -y --allow-downgrades pve-manager=$REQUIRED_VERSION
+
+    echo "[*] Version enforced successfully"
+else
+    echo "[*] Correct version already installed"
+fi
+
+echo "[*] Applying package holds..."
+
+apt-mark hold pve-manager
+apt-mark hold proxmox-ve
+
+echo "========== Pre-Check Complete =========="
+
 ### MODE INPUT ###
 MODE="$1"
 
