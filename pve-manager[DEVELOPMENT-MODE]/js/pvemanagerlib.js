@@ -1560,6 +1560,11 @@ Ext.define('PVE.Utils', {
             p: gettext('Premium'),
         },
 
+        noSubKeyHtml:
+            'You do not have a valid subscription for this server. Please visit ' +
+            '<a target="_blank" href="https://www.proxmox.com/en/proxmox-virtual-environment/pricing">' +
+            'www.proxmox.com</a> to get a list of available options.',
+
         getClusterSubscriptionLevel: async function () {
             let { result } = await Proxmox.Async.api2({ url: '/cluster/status' });
             let levelMap = Object.fromEntries(
@@ -47352,7 +47357,6 @@ Ext.define('PVE.node.CmdMenu', {
             text: gettext('Create VM'),
             itemId: 'createvm',
             iconCls: 'fa fa-desktop',
-            //hidden: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
             handler: function () {
                 Ext.create('PVE.qemu.CreateWizard', {
                     nodename: this.up('menu').nodename,
@@ -47364,7 +47368,6 @@ Ext.define('PVE.node.CmdMenu', {
             text: gettext('Create CT'),
             itemId: 'createct',
             iconCls: 'fa fa-cube',
-            //hidden: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
             handler: function () {
                 Ext.create('PVE.lxc.CreateWizard', {
                     nodename: this.up('menu').nodename,
@@ -47502,9 +47505,8 @@ Ext.define('PVE.node.CmdMenu', {
         }
 
         if (PVE.Utils.isStandaloneNode()) {
-        }
             me.getComponent('bulkmigrate').setVisible(false);
-
+        }
     },
 });
 Ext.define('PVE.node.Config', {
@@ -47520,6 +47522,7 @@ Ext.define('PVE.node.Config', {
         if (!nodename) {
             throw 'no node name specified';
         }
+
         var caps = Ext.state.Manager.get('GuiCap');
 
         me.statusStore = Ext.create('Proxmox.data.ObjectStore', {
@@ -67749,7 +67752,7 @@ Ext.define('PVE.StdWorkspace', {
             baseCls: 'x-btn',
             iconCls: 'fa fa-desktop',
             text: gettext('Create VM'),
-            hidden: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
+            disabled: !caps.vms['VM.Allocate'], //Changed displayment state (disbaled -> hidden)
             handler: function () {
                 let wiz = Ext.create('PVE.qemu.CreateWizard', {});
                 wiz.show();
@@ -67762,7 +67765,7 @@ Ext.define('PVE.StdWorkspace', {
             baseCls: 'x-btn',
             iconCls: 'fa fa-cube',
             text: gettext('Create CT'),
-            hidden: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
+            disabled: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
             handler: function () {
                 let wiz = Ext.create('PVE.lxc.CreateWizard', {});
                 wiz.show();
@@ -67875,6 +67878,7 @@ Ext.define('PVE.StdWorkspace', {
                                         var win = Ext.create('Proxmox.window.PasswordEdit', {
                                             userid: Proxmox.UserName,
                                             confirmCurrentPassword: Proxmox.UserName !== 'root@pam',
+                                            hidden: !caps.vms['User.Modify'], //Changed displayment state (disabled -> hidden)
                                             minLength: 8,
                                         });
                                         win.show();
