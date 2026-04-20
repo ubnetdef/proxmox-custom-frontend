@@ -7,6 +7,7 @@ CUSTOM_DIR="/UBnetDef-Frontend"
 
 PVE_MANAGER_DIR="/usr/share/pve-manager"
 PWT_IMG_DIR="/usr/share/javascript/proxmox-widget-toolkit/images"
+PWT_LIB_DIR="/usr/share/javascript/proxmox-widget-toolkit"
 
 REQUIRED_VERSION="9.1.5"
 
@@ -66,6 +67,7 @@ esac
 SRC_DIR="$CUSTOM_DIR/$MODE_DIR"
 LOGO_SRC="$SRC_DIR/images/proxmox_logo.svg"
 LEGACY_LOGO_SRC="$SRC_DIR/images/logo.svg"
+LIB_SRC="$SRC_DIR/proxmoxlib.js"
 
 echo "========== Proxmox Custom Deployment =========="
 echo "[*] Mode: $MODE"
@@ -91,7 +93,17 @@ fi
 echo "[*] Applying frontend overrides..."
 RSYNC_OUTPUT=$(rsync -av --exclude='.git' "$SRC_DIR/" "$PVE_MANAGER_DIR/")
 
-### 4️⃣ Deploy PWT logo ###
+### 4️⃣ Deploy proxmoxlib.js ###
+LIB_CHANGED=0
+if [ -f "$LIB_SRC" ]; then
+    echo "[*] Applying proxmoxlib.js..."
+    cp "$LIB_SRC" "$PWT_LIB_DIR/proxmoxlib.js"
+    LIB_CHANGED=1
+else
+    echo "[!] No proxmoxlib.js found in $SRC_DIR/"
+fi
+
+### 5️⃣ Deploy PWT logo ###
 LOGO_CHANGED=0
 if [ -f "$LOGO_SRC" ]; then
     echo "[*] Applying PWT logo..."
@@ -101,13 +113,13 @@ else
     echo "[!] No proxmox_logo.svg found in $SRC_DIR/images/"
 fi
 
-### 5️⃣ Optional legacy logo ###
+### 6️⃣ Optional legacy logo ###
 if [ -f "$LEGACY_LOGO_SRC" ]; then
     echo "[*] Applying legacy logo..."
     cp "$LEGACY_LOGO_SRC" "$PVE_MANAGER_DIR/images/logo.svg"
 fi
 
-### 6️⃣ Restart pveproxy only if changes happened ###
+### 7️⃣ Restart pveproxy only if changes happened ###
 if echo "$RSYNC_OUTPUT" | grep -qv "sending incremental file list" || [ "$LOGO_CHANGED" -eq 1 ]; then
     echo "[*] Changes detected, restarting pveproxy..."
     systemctl restart pveproxy

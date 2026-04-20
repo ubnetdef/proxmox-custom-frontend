@@ -1560,11 +1560,6 @@ Ext.define('PVE.Utils', {
             p: gettext('Premium'),
         },
 
-        noSubKeyHtml:
-            'You do not have a valid subscription for this server. Please visit ' +
-            '<a target="_blank" href="https://www.proxmox.com/en/proxmox-virtual-environment/pricing">' +
-            'www.proxmox.com</a> to get a list of available options.',
-
         getClusterSubscriptionLevel: async function () {
             let { result } = await Proxmox.Async.api2({ url: '/cluster/status' });
             let levelMap = Object.fromEntries(
@@ -20049,13 +20044,13 @@ Ext.define('PVE.window.Clone', {
             border: false,
             layout: 'fit',
             buttons: [
-                {
-                    xtype: 'proxmoxHelpButton',
-                    listenToGlobalEvent: false,
-                    hidden: false,
-                    onlineHelp: me.onlineHelp,
-                },
-                '->',
+//                {
+//                    xtype: 'proxmoxHelpButton',
+//                    listenToGlobalEvent: false,
+//                    hidden: false,
+//                    onlineHelp: me.onlineHelp,
+//                },
+//                '->',
                 {
                     reference: 'submitBtn',
                     text: gettext('Clone'),
@@ -20809,9 +20804,9 @@ Ext.define('PVE.window.Migrate', {
             );
             view.setTitle(title);
 
-            me.lookup('proxmoxHelpButton').setHelpConfig({
-                onlineHelp: vm.get(view.vmtype).onlineHelp,
-            });
+//            me.lookup('proxmoxHelpButton').setHelpConfig({
+//                onlineHelp: vm.get(view.vmtype).onlineHelp,
+//            });
             me.lookup('formPanel').isValid();
         },
 
@@ -21410,14 +21405,14 @@ Ext.define('PVE.window.Migrate', {
         },
     ],
     buttons: [
-        {
-            xtype: 'proxmoxHelpButton',
-            reference: 'proxmoxHelpButton',
-            onlineHelp: 'pct_migration',
-            listenToGlobalEvent: false,
-            hidden: false,
-        },
-        '->',
+//        {
+//            xtype: 'proxmoxHelpButton',
+//            reference: 'proxmoxHelpButton',
+//            onlineHelp: 'pct_migration',
+//            listenToGlobalEvent: false,
+//            hidden: false,
+//        },
+//        '->',
         {
             xtype: 'button',
             reference: 'submitButton',
@@ -22208,12 +22203,12 @@ Ext.define('PVE.window.Settings', {
     resizable: false,
 
     buttons: [
-        {
-            xtype: 'proxmoxHelpButton',
-            onlineHelp: 'gui_my_settings',
-            hidden: false,
-        },
-        '->',
+//        {
+//            xtype: 'proxmoxHelpButton',
+//            onlineHelp: 'gui_my_settings',
+//            hidden: false,
+//        },
+//        '->',
         {
             text: gettext('Close'),
             handler: function () {
@@ -23818,11 +23813,11 @@ Ext.define('PVE.window.Wizard', {
                 },
             ],
             fbar: [
-                {
-                    xtype: 'proxmoxHelpButton',
-                    itemId: 'help',
-                },
-                '->',
+//                {
+//                    xtype: 'proxmoxHelpButton',
+//                    itemId: 'help',
+//                },
+//                '->',
                 {
                     xtype: 'proxmoxcheckbox',
                     boxLabelAlign: 'before',
@@ -34672,13 +34667,13 @@ Ext.define('PVE.dc.SyncWindow', {
     ],
 
     buttons: [
-        {
-            xtype: 'proxmoxHelpButton',
-            reference: 'help_btn',
-            onlineHelp: 'pveum_ldap_sync',
-            hidden: false,
-        },
-        '->',
+//        {
+//            xtype: 'proxmoxHelpButton',
+//            reference: 'help_btn',
+//            onlineHelp: 'pveum_ldap_sync',
+//            hidden: false,
+//        },
+//        '->',
         {
             text: gettext('Preview'),
             reference: 'preview_btn',
@@ -47357,6 +47352,7 @@ Ext.define('PVE.node.CmdMenu', {
             text: gettext('Create VM'),
             itemId: 'createvm',
             iconCls: 'fa fa-desktop',
+            hidden: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
             handler: function () {
                 Ext.create('PVE.qemu.CreateWizard', {
                     nodename: this.up('menu').nodename,
@@ -47368,6 +47364,7 @@ Ext.define('PVE.node.CmdMenu', {
             text: gettext('Create CT'),
             itemId: 'createct',
             iconCls: 'fa fa-cube',
+            hidden: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
             handler: function () {
                 Ext.create('PVE.lxc.CreateWizard', {
                     nodename: this.up('menu').nodename,
@@ -50002,7 +49999,7 @@ Ext.define('PVE.pool.Config', {
                     itemId: 'summary',
                 },
                 {
-                    title: gettext('Members'),
+                    title: gettext('Machines'),
                     xtype: 'pvePoolMembers',
                     iconCls: 'fa fa-th',
                     pool: pool,
@@ -67752,7 +67749,7 @@ Ext.define('PVE.StdWorkspace', {
             baseCls: 'x-btn',
             iconCls: 'fa fa-desktop',
             text: gettext('Create VM'),
-            disabled: !caps.vms['VM.Allocate'],
+            hidden: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
             handler: function () {
                 let wiz = Ext.create('PVE.qemu.CreateWizard', {});
                 wiz.show();
@@ -67765,7 +67762,7 @@ Ext.define('PVE.StdWorkspace', {
             baseCls: 'x-btn',
             iconCls: 'fa fa-cube',
             text: gettext('Create CT'),
-            disabled: !caps.vms['VM.Allocate'],
+            hidden: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
             handler: function () {
                 let wiz = Ext.create('PVE.lxc.CreateWizard', {});
                 wiz.show();
