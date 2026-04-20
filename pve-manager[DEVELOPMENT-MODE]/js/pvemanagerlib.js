@@ -47352,7 +47352,7 @@ Ext.define('PVE.node.CmdMenu', {
             text: gettext('Create VM'),
             itemId: 'createvm',
             iconCls: 'fa fa-desktop',
-            hidden: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
+            //hidden: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
             handler: function () {
                 Ext.create('PVE.qemu.CreateWizard', {
                     nodename: this.up('menu').nodename,
@@ -47364,7 +47364,7 @@ Ext.define('PVE.node.CmdMenu', {
             text: gettext('Create CT'),
             itemId: 'createct',
             iconCls: 'fa fa-cube',
-            hidden: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
+            //hidden: !caps.vms['VM.Allocate'], //Changed displayment state (disabled -> hidden)
             handler: function () {
                 Ext.create('PVE.lxc.CreateWizard', {
                     nodename: this.up('menu').nodename,
@@ -47502,8 +47502,9 @@ Ext.define('PVE.node.CmdMenu', {
         }
 
         if (PVE.Utils.isStandaloneNode()) {
-            me.getComponent('bulkmigrate').setVisible(false);
         }
+            me.getComponent('bulkmigrate').setVisible(false);
+
     },
 });
 Ext.define('PVE.node.Config', {
@@ -47519,7 +47520,6 @@ Ext.define('PVE.node.Config', {
         if (!nodename) {
             throw 'no node name specified';
         }
-
         var caps = Ext.state.Manager.get('GuiCap');
 
         me.statusStore = Ext.create('Proxmox.data.ObjectStore', {

@@ -67,7 +67,7 @@ esac
 SRC_DIR="$CUSTOM_DIR/$MODE_DIR"
 LOGO_SRC="$SRC_DIR/images/proxmox_logo.svg"
 LEGACY_LOGO_SRC="$SRC_DIR/images/logo.svg"
-LIB_SRC="$SRC_DIR/proxmoxlib.js"
+LIB_SRC="$SRC_DIR/js/proxmoxlib.js"
 
 echo "========== Proxmox Custom Deployment =========="
 echo "[*] Mode: $MODE"
