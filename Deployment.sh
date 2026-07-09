@@ -10,9 +10,20 @@ if [ ! -f "$CONFIG_FILE" ]; then
   exit 1
 fi
 
-if ! command -v node &>/dev/null; then
-  echo "[!] 'node' is required to read Configuration.js but was not found in PATH."
-  exit 1
+if ! command -v node >/dev/null 2>&1; then
+    echo "[*] Node.js not found. Installing..."
+
+    apt-get update
+
+    if ! apt-get install -y nodejs npm; then
+        echo "[!] Failed to install Node.js."
+        exit 1
+    fi
+
+    if ! command -v node >/dev/null 2>&1; then
+        echo "[!] Node.js installation completed, but 'node' is still unavailable."
+        exit 1
+    fi
 fi
 
 # Helper: pull a single key out of the config module
@@ -124,6 +135,7 @@ echo "[*] Applying package holds..."
 apt-mark hold "$PKG_NAME"
 apt-mark hold proxmox-ve
 echo "========== Pre-Check Complete =========="
+sleep 2
 
 # ──────────────────────────────────────────────────────────────────────────────
 echo ""
@@ -132,17 +144,18 @@ echo "[*] Service : $SERVICE_LABEL"
 echo "[*] Mode    : $MODE_LABEL"
 echo "[*] Source  : $SRC_DIR"
 echo "[*] Target  : $MANAGER_DIR"
+sleep 2
 
 # ── 1. Clone or update repo 
 if [ ! -d "$CUSTOM_DIR/.git" ]; then
-  echo "[*] Cloning repo..."
+  echo "[*] Downloading required files..."
   rm -rf "$CUSTOM_DIR"
   git clone --depth 1 "$REPO" "$CUSTOM_DIR"
 else
-  echo "[*] Updating repo..."
+  echo "[*] Updating required files..."
   git -C "$CUSTOM_DIR" pull
 fi
-
+sleep 1
 # ── 2. Validate source folder
 if [ ! -d "$SRC_DIR" ]; then
   echo "[!] Source folder not found: $SRC_DIR"
@@ -150,43 +163,50 @@ if [ ! -d "$SRC_DIR" ]; then
 fi
 
 # ── 3. Deploy frontend via rsync (mirror)
-echo "[*] Applying frontend overrides..."
+echo "[*] Applying custom frontend..."
 RSYNC_OUTPUT=$(rsync -av --exclude='.git' "$SRC_DIR/" "$MANAGER_DIR/")
+sleep 1
 
 # ── 4. Deploy proxmoxlib.js
 LIB_CHANGED=0
 if [ -f "$LIB_SRC" ]; then
-  echo "[*] Applying proxmoxlib.js..."
+  echo "[*] Applying custom WebUI layout..."
   cp "$LIB_SRC" "$PWT_LIB_DIR/proxmoxlib.js"
   LIB_CHANGED=1
 else
   echo "[!] No proxmoxlib.js found in $SRC_DIR/js/"
 fi
+sleep 1
 
 # ── 5. Deploy PWT logo
 LOGO_CHANGED=0
 if [ -f "$LOGO_SRC" ]; then
-  echo "[*] Applying PWT logo..."
+  echo "[*] Applying custom branding... (task 1/2)"
   cp "$LOGO_SRC" "$PWT_IMG_DIR/proxmox_logo.svg"
   LOGO_CHANGED=1
 else
   echo "[!] No proxmox_logo.svg found in $SRC_DIR/images/"
 fi
+sleep 1
 
 # ── 6. Optional legacy logo 
 if [ -f "$LEGACY_LOGO_SRC" ]; then
-  echo "[*] Applying legacy logo..."
+  echo "[*] Applying custom branding... (task 2/2)"
   cp "$LEGACY_LOGO_SRC" "$MANAGER_DIR/images/logo.svg"
 fi
+sleep 1
 
 # ── 7. Restart proxy only when something changed
 if echo "$RSYNC_OUTPUT" | grep -qv "sending incremental file list" \
    || [ "$LOGO_CHANGED" -eq 1 ] \
    || [ "$LIB_CHANGED"  -eq 1 ]; then
   echo "[*] Changes detected, restarting pveproxy..."
+  echo "Operation has completed successfully (Refresh your browser to see changes)"
   systemctl restart pveproxy
 else
-  echo "[*] No changes detected, skipping restart"
+  echo "[*] No major changes detected"
+  sleep 1
+  echo "Operation has completed successfully"
 fi
-
+sleep 1
 echo "========== DONE =========="
