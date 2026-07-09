@@ -4,7 +4,7 @@ module.exports = {
   CUSTOM_DIR: "/UBnetDef-Frontend",
 
   // ─── Required package versions (pinned to prevent API-breakage) ────────────
-  PVE_VERSION: "9.2.0",
+  PVE_VERSION: "9.2.3",
   PDS_VERSION: "1.1.4",
   PBS_VERSION: "4.2.0",
 
