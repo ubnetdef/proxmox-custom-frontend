@@ -21319,7 +21319,7 @@ Ext.define('PVE.window.LoginWindow', {
         formulas: {
             button_text: function (get) {
                 if (get('openid') === true) {
-                    return gettext('Login (OpenID redirect)');
+                    return gettext('SSO Login');
                 } else {
                     return gettext('Login');
                 }
